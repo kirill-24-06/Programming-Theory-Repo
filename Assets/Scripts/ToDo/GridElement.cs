@@ -1,21 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Match3
 {
     public class GridElement : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
+        [SerializeField] private Element _element;
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+        public Element ElementType => _element;
     }
 }
