@@ -5,7 +5,7 @@ namespace Match3
     /// <summary>
     /// The cell in which the object that the player interacts with is stored
     /// </summary>
-    public class GridTile
+    public class GridCell
     {
         private GridSystem _grid;
 
@@ -14,13 +14,13 @@ namespace Match3
 
         public GridElement Value {  get; private set; }
 
-        public GridTile(GridSystem grid, int x, int y)
+        public GridCell(GridSystem grid, int x, int y)
         {
             _grid = grid;
             this.x = x;
             this.y = y;
         }
 
-        public void SetValue(GridElement value) => Value = Value != null ? Value : value;
+        public void SetValue(GridElement value) => Value = value;
     }
 }

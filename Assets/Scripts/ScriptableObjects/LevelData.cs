@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Match3
 {
     [CreateAssetMenu(fileName = "new LevelData", menuName = "Match3/LevelData", order = 53)]
-    public class LevelData : ScriptableObject
+    public class LevelData : ScriptableObject,IGridData
     {
         [SerializeField] private int _width;
         [SerializeField] private int _height;
