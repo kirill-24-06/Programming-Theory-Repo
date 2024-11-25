@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Match3
@@ -70,14 +71,19 @@ namespace Match3
 
             await SwapAsync(selectedElement, position);
 
+            List<Vector2Int> matches = _controller.FindMatches();
+
+            _controller.DestroyMatches(matches);
+
+            _controller.MoveElements();
+
+            await UniTask.Delay(500);
+
+            _controller.FillEmpties();
+
             //ToDo:
-            //FindMatches();
-            //DestroyMatches();
-            //MakeElemetsFall();
-            //SpawnNewElements();
             // Improve swap
 
-            Debug.Log("Done");
             _selectedElement = Vector2Int.one * -1;
             _isSwaping = false;
         }
@@ -89,8 +95,8 @@ namespace Match3
 
             var tasks = new UniTask[2];
 
-            tasks[0] = MoveAsync(element1.transform, position1, position2);
-            tasks[1] = MoveAsync(element2.transform, position2, position1);
+            tasks[0] = ElementMover.MoveAsync(element1.transform, position1, position2, _swapTime);
+            tasks[1] = ElementMover.MoveAsync(element2.transform, position2, position1, _swapTime);
 
             await UniTask.WhenAll(tasks);
 
@@ -98,19 +104,7 @@ namespace Match3
             _controller.SetElement(element2, position1);
         }
 
-        private async UniTask MoveAsync(Transform element, Vector2Int from, Vector2Int to)
-        {
-            float count = 0;
 
-            while (count < _swapTime)
-            {
-                element.transform.position = Vector2.LerpUnclamped(from, to, count / _swapTime);
-
-                count += Time.deltaTime;
-
-                await UniTask.Yield(PlayerLoopTiming.Update);
-            }
-        }
 
         private void OnDestroy()
         {

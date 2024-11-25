@@ -12,6 +12,9 @@ namespace Match3
         private int _width;
         private int _height;
 
+        public int Height => _height;
+        public int Width => _width;
+
         public GridSystem(int width, int height)
         {
             _width = width;

@@ -4,12 +4,22 @@ namespace Match3
 {
     public static class VectorConverter
     {
+        private static Vector2Int _vector2Int = new();
+
         public static Vector2Int ToVector2Int(Vector3 vector)
         {
-            int x = Mathf.RoundToInt(vector.x);
-            int y = Mathf.RoundToInt(vector.y);
+            _vector2Int.x = Mathf.RoundToInt(vector.x);
+            _vector2Int.y = Mathf.RoundToInt(vector.y);
 
-            return new Vector2Int(x, y);
+            return _vector2Int;
+        }
+
+        public static Vector2Int ToVector2Int(int x, int y)
+        {
+            _vector2Int.x = x;
+            _vector2Int.y = y;
+
+            return _vector2Int;
         }
     }
 }
