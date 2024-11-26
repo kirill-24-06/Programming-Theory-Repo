@@ -15,11 +15,16 @@ MonoBehaviour:
   _width: 10
   _height: 10
   _prefabs:
-  - {fileID: 1459500137112213027, guid: af04be613d2cac7479d514872a15da0d, type: 3}
-  - {fileID: 218095184767050285, guid: 418ea1dc6a54d474c802d792916ee2df, type: 3}
   - {fileID: 493711764865814898, guid: 4cc45be92827122489207f6cf560381f, type: 3}
-  - {fileID: -5860307789238954499, guid: 0f8484fd7b31b4c499f01dd4fd41bb0d, type: 3}
-  - {fileID: 2731422586274315369, guid: c0c5ed2b69784b648903820caddb4ce5, type: 3}
-  - {fileID: -3455418390744281901, guid: 5f2128b7991b6c0478deab4155870a88, type: 3}
+  - {fileID: 218095184767050285, guid: 418ea1dc6a54d474c802d792916ee2df, type: 3}
   - {fileID: -8308340507236394519, guid: 81c92893f71d69444b38ee019dfea69c, type: 3}
+  - {fileID: -5860307789238954499, guid: 0f8484fd7b31b4c499f01dd4fd41bb0d, type: 3}
+  - {fileID: -3455418390744281901, guid: 5f2128b7991b6c0478deab4155870a88, type: 3}
   - {fileID: -2156584623013242665, guid: 7ad09fbb406bbe04ea9fa4f928b346fc, type: 3}
+  - {fileID: 1459500137112213027, guid: af04be613d2cac7479d514872a15da0d, type: 3}
+  - {fileID: 2731422586274315369, guid: c0c5ed2b69784b648903820caddb4ce5, type: 3}
+  _scoreModifier: 1.5
+  _modifierIncrease: 0.5
+  _baseScore: 10
+  _swapTime: 0.2
+  _levelDuration: 90

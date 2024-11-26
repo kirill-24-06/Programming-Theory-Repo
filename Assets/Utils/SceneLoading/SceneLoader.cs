@@ -23,7 +23,7 @@ namespace Utils.SceneLoading
             LoadSceneAsync(sceneName, loadingScreen.destroyCancellationToken).Forget();
         }
 
-        public static async UniTaskVoid LoadSceneAsync(string sceneName, CancellationToken token)
+        private static async UniTaskVoid LoadSceneAsync(string sceneName, CancellationToken token)
         {
             AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
             operation.allowSceneActivation = false;

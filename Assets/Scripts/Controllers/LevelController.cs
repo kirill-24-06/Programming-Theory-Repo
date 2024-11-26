@@ -7,27 +7,41 @@ namespace Match3
     /// <summary>
     /// Responsible for starting and completing the level.
     /// </summary>
-    public class LevelController : MonoBehaviour
+    public class LevelController : IResetable
     {
-        [SerializeField] private LevelData _data;
-        [SerializeField] private InputManager _inputHandler;
-        [SerializeField] protected float _swapTime;
+        private LevelData _data;
+        private InputManager _inputHandler;
 
         private GridController _controller;
         private Camera _camera;
 
+        private Timer _timer;
+
+        private EventManager _events;
+
         private Vector2Int _selectedElement = Vector2Int.one * -1;
 
         private bool _isSwaping = false;
+        private bool _isGameActive = false;
 
-        private void Start() => Init();
-
-        private void Init()
+        public LevelController(LevelData data, Transform elementsParrent)
         {
+            _data = data;
+            _inputHandler = EntryPoint.Instance.InputHandler;
+            _events = EntryPoint.Instance.Events;
+
+            Init(elementsParrent);
+        }
+
+        private void Init(Transform elementsParrent)
+        {
+            _timer = EntryPoint.Instance.Timer;
             _camera = Camera.main;
-            CreateGrid();
+            CreateGrid(elementsParrent);
 
             _inputHandler.Select += OnElementSelected;
+            _events.Start += OnStart;
+            _timer.TimeIsOver += OnStop;
 
             //ToDo:
             //LevelStage.Handle();
@@ -35,15 +49,29 @@ namespace Match3
             //StopGame();
         }
 
-        private void CreateGrid()
+        private void OnStart()
         {
-            _controller = new GridController();
-            _controller.CreateNewGrid(_data, transform);
+            _timer.SetTimer(_data.LevelDuration);
+            _timer.StartTimer();
+
+            _isGameActive = true;
+        }
+
+        private void OnStop()
+        {
+            _isGameActive = false;
+            _events.Stop?.Invoke();
+        }
+
+        private void CreateGrid(Transform transform)
+        {
+            _controller = new GridController(transform);
+            _controller.CreateNewGrid(_data);
         }
 
         public void OnElementSelected()
         {
-            if (_isSwaping) return;
+            if (_isSwaping || !_isGameActive) return;
 
             var position = VectorConverter.ToVector2Int(_camera.ScreenToWorldPoint(_inputHandler.SelectedPos));
 
@@ -77,7 +105,9 @@ namespace Match3
 
             _controller.MoveElements();
 
-            await UniTask.Delay(500);
+            _events.AddScore?.Invoke(matches.Count);
+
+            await UniTask.Delay(500, cancellationToken: EntryPoint.Instance.SceneExitToken);
 
             _controller.FillEmpties();
 
@@ -95,8 +125,8 @@ namespace Match3
 
             var tasks = new UniTask[2];
 
-            tasks[0] = ElementMover.MoveAsync(element1.transform, position1, position2, _swapTime);
-            tasks[1] = ElementMover.MoveAsync(element2.transform, position2, position1, _swapTime);
+            tasks[0] = ElementMover.MoveAsync(element1.transform, position1, position2, _data.SwapTime);
+            tasks[1] = ElementMover.MoveAsync(element2.transform, position2, position1, _data.SwapTime);
 
             await UniTask.WhenAll(tasks);
 
@@ -104,12 +134,11 @@ namespace Match3
             _controller.SetElement(element2, position1);
         }
 
-
-
-        private void OnDestroy()
+        public void Reset()
         {
+            _timer.TimeIsOver -= OnStop;
             _inputHandler.Select -= OnElementSelected;
+            _events.Start-= OnStart;
         }
-
     }
 }

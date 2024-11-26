@@ -14,14 +14,13 @@ namespace Match3
 
         public Action Select;
 
-        private void Awake()
+        public void Initialize()
         {
             var input = GetComponent<PlayerInput>();
             _select = input.actions["Select"];
             _click = input.actions["Click"];
 
             _click.performed += OnClick;
-
         }
 
         public void OnClick(InputAction.CallbackContext context)

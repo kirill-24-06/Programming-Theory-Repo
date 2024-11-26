@@ -12,11 +12,17 @@ namespace Match3
         IGridData _data;
         private GridSystem _grid;
         private Transform _parrent;
+        private EventManager _events;
 
-        public void CreateNewGrid(IGridData data, Transform parrent)
+        public GridController(Transform parrent)
+        {
+            _parrent = parrent;
+            _events = EntryPoint.Instance.Events;
+        }
+
+        public void CreateNewGrid(IGridData data)
         {
             _data = data;
-            _parrent = parrent;
             _grid = GridSystem.NewGrid(_data.Width, _data.Height);
             var gridPos = new Vector2Int();
 
@@ -195,7 +201,7 @@ namespace Match3
                                 //ToDo: VFX
 
                                 ElementMover.MoveAsync(element.transform, VectorConverter.ToVector2Int(i, k),
-                                    VectorConverter.ToVector2Int(i, j), 0.2f).Forget();
+                                    VectorConverter.ToVector2Int(i, j), 0.3f).Forget();
 
                                 break;
                             }
@@ -228,7 +234,9 @@ namespace Match3
                     cell.SetValue(element);
 
                     MoveElements();
-                    DestroyMatches(FindMatches());
+                    var matches = FindMatches();
+                    DestroyMatches(matches);
+                    _events.AddScore(matches.Count);
                     FillEmpties();
                 }
             }
