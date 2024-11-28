@@ -1,5 +1,7 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 namespace Match3
@@ -30,7 +32,7 @@ namespace Match3
             {
                 for (int i = 0; i < _data.Width; i++)
                 {
-                    var cell = new GridCell(_grid, i, j);
+                    var cell = new GridCell();
                     gridPos.Set(i, j);
 
 
@@ -114,6 +116,22 @@ namespace Match3
 
         public bool IsValidPositon(Vector2Int position) => _grid.ValueExist(position);
 
+        public async UniTask SwapAsync(Vector2Int position1, Vector2Int position2, float swapTime)
+        {
+            var element1 = GetElement(position1);
+            var element2 = GetElement(position2);
+
+            var tasks = new UniTask[2];
+
+            tasks[0] = ElementMover.MoveAsync(element1.transform, position2, swapTime);
+            tasks[1] = ElementMover.MoveAsync(element2.transform, position1, swapTime);
+
+            SetElement(element1, position2);
+            SetElement(element2, position1);
+
+            await UniTask.WhenAll(tasks);
+        }
+
         public List<Vector2Int> FindMatches()
         {
             HashSet<Vector2Int> matches = new();
@@ -162,7 +180,7 @@ namespace Match3
             return new List<Vector2Int>(matches);
         }
 
-        public void DestroyMatches(List<Vector2Int> matches)
+        public async UniTask DestroyMatches(List<Vector2Int> matches,CancellationToken token)
         {
             foreach (var match in matches)
             {
@@ -171,15 +189,22 @@ namespace Match3
                 var element = cell.Value;
                 cell.SetValue(null);
 
+                //ToDo: Spawner.SpawnParticle();
+                EntryPoint.Instance.AudioController.PlayDestroy();
 
-                //ToDo: VFX
+                await element.transform.DOPunchScale(Vector3.one * 0.1f, 0.1f, 1, 0.5f).ToUniTask(cancellationToken: token);
 
-                GameObject.Destroy(element.gameObject, 0.1f);
+                GameObject.Instantiate(EntryPoint.Instance.DestroyParticle,
+                    element.transform.position, EntryPoint.Instance.DestroyParticle.transform.rotation);
+                
+                GameObject.Destroy(element.gameObject);
             }
         }
 
-        public void MoveElements()
+        public async UniTask MoveElements()
         {
+            var tasks = new List<UniTask>();
+
             for (int i = 0; i < _grid.Width; i++)
             {
                 for (int j = 0; j < _grid.Height; j++)
@@ -198,10 +223,8 @@ namespace Match3
                                 cell2.SetValue(element);
                                 cell1.SetValue(null);
 
-                                //ToDo: VFX
-
-                                ElementMover.MoveAsync(element.transform, VectorConverter.ToVector2Int(i, k),
-                                    VectorConverter.ToVector2Int(i, j), 0.3f).Forget();
+                                tasks.Add(ElementMover.MoveAsync(element.transform,
+                                      VectorConverter.ToVector2Int(i, j)));
 
                                 break;
                             }
@@ -209,23 +232,40 @@ namespace Match3
                     }
                 }
             }
+
+            await UniTask.WhenAll(tasks);
         }
 
         /// <summary>
         /// Creates new elements and places them in the grid until it is full.
         /// </summary>
-        public void FillEmpties()
+        public async UniTask FillEmpties(CancellationToken token)
         {
+            var isFilled = false;
+
+            while (!isFilled && !token.IsCancellationRequested)
+            {
+                //ToDo:
+                // Make an animation of a fall when instantiating
+                isFilled = await FillTask(token);
+            }
+        }
+
+        private async UniTask<bool> FillTask(CancellationToken token)
+        {
+            var isFilled = true;
             var j = _grid.Height - 1;
 
             for (int i = 0; i < _grid.Width; i++)
             {
-                var cell = _grid.GetValue(i,j);
+                var cell = _grid.GetValue(i, j);
 
                 if (cell.Value == null)
                 {
+                    isFilled = false;
                     int index = Random.Range(0, _data.Prefabs.Length);
 
+                    EntryPoint.Instance.AudioController.PlaySpawnSound();
                     var element = GameObject.Instantiate(_data.Prefabs[index],
                         new Vector2(i, j), _data.Prefabs[index].transform.rotation);
 
@@ -233,13 +273,16 @@ namespace Match3
 
                     cell.SetValue(element);
 
-                    MoveElements();
+                    if (token.IsCancellationRequested) break;
+
+                    await MoveElements();
                     var matches = FindMatches();
-                    DestroyMatches(matches);
+                    await DestroyMatches(matches,token);
                     _events.AddScore(matches.Count);
-                    FillEmpties();
                 }
             }
+
+            return isFilled;
         }
     }
 }

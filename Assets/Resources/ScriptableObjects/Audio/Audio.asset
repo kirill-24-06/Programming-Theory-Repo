@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8ea2cb27b91c4b49a855f0e80201e1b, type: 3}
+  m_Name: Audio
+  m_EditorClassIdentifier: 
+  _selectSound: {fileID: 8300000, guid: 60c8f88586000a54eb953cf234f4d84e, type: 3}
+  _deselectSound: {fileID: 8300000, guid: 5194c87070f096546851eaaf8adcd15a, type: 3}
+  _destroySound: {fileID: 8300000, guid: 4f8ff76c3fcedab46b7007b2ea9d779a, type: 3}
+  _spawnSound: {fileID: 8300000, guid: d46323e22e74e46baa241cbf48c85671, type: 3}

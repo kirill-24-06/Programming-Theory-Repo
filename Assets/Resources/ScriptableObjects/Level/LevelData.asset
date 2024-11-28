@@ -26,5 +26,7 @@ MonoBehaviour:
   _scoreModifier: 1.5
   _modifierIncrease: 0.5
   _baseScore: 10
-  _swapTime: 0.2
   _levelDuration: 90
+  _audio: {fileID: 11400000, guid: 105783821c59b0747b42a2ee1b0a6e6e, type: 2}
+  _swapTime: 0.2
+  _particlePrefab: {fileID: 1429954232896169633, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}

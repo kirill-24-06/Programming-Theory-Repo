@@ -1,24 +1,24 @@
 ﻿using Cysharp.Threading.Tasks;
 using System.Threading;
 using UnityEngine;
+using DG.Tweening;
 
 public static class ElementMover
 {
     private static CancellationToken _token;
 
-    public static async UniTask MoveAsync(Transform element, Vector2Int from, Vector2Int to, float swapTime)
+    private static Vector2 _endValue;
+
+    public static async UniTask MoveAsync(Transform element, Vector2Int to, float swapTime = 0.2f)
     {
-        float count = 0;
+        _endValue.Set(to.x, to.y);
 
-        while (count < swapTime && element != null && !_token.IsCancellationRequested)
-        {
-            element.transform.position = Vector2.LerpUnclamped(from, to, count / swapTime);
-
-            count += Time.deltaTime;
-
-            await UniTask.Yield(PlayerLoopTiming.Update);
-        }
+        await element
+            .DOMove(_endValue,swapTime)
+            .SetEase(Ease.Linear)
+            .ToUniTask(cancellationToken: _token);
     }
 
     public static void GetCancellationToken(CancellationToken token) => _token = token;
+
 }

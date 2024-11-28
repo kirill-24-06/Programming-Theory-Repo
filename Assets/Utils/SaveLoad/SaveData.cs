@@ -2,5 +2,5 @@
 [System.Serializable]
 public class SaveData
 {
-    //TODO
+    public int BestScore;
 }

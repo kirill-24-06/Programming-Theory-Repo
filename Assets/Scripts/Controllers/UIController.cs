@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils.SceneLoading;
 
 namespace Match3
 {
@@ -46,7 +47,11 @@ namespace Match3
 
         private void ChangeBestScore(int newScore) => _bestScoreText.text = newScore.ToString();
 
-        private void GoToMenu() { }
+        private void GoToMenu()
+        {
+            EntryPoint.Instance.Events.Exit?.Invoke();
+            SceneLoader.LoadScene(GlobalConstants.MainMenuSceneName);
+        }
 
         public void Reset()
         {

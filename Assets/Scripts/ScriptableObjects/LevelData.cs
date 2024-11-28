@@ -13,13 +13,17 @@ namespace Match3
         [Header("Score data")]
         [SerializeField] private float _scoreModifier;
         [SerializeField] private float _modifierIncrease;
-
-
         [SerializeField] private int _baseScore;
-        [SerializeField] private float _swapTime;
 
         [Header("TimeBar")]
         [SerializeField] private float _levelDuration;
+
+        [Header("Audio")]
+        [SerializeField] private AudioClips _audio;
+
+        [Header("Other")]
+        [SerializeField] private float _swapTime;
+        [SerializeField] private GameObject _particlePrefab;
 
 
 
@@ -37,5 +41,9 @@ namespace Match3
         public int ScorePerElement => _baseScore;
 
         public float LevelDuration => _levelDuration;
+
+        public AudioClips Audio => _audio;
+
+        public GameObject ParticlePrefab => _particlePrefab;
     }
 }

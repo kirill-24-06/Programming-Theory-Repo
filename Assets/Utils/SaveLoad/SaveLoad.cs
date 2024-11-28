@@ -11,7 +11,7 @@ public static class SaveLoad
 
         var data = new SaveData()
         {
-          //ToDO
+            BestScore = SessionData.BestScore
         };
 
         _formatter.Serialize(saveStream, data);
